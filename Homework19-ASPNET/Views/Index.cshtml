@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Homework19_ASPNET.Project>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Projects</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+            <th>Owner</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ID</td>
+                <td>@item.Name</td>
+                <td>@item.Description</td>
+                <td>@item.StartDate.ToShortDateString()</td>
+                <td>@item.EndDate.ToShortDateString()</td>
+                <td>@item.Status</td>
+                <td>@item.Owner</td>
+            </tr>
+        }
+    </tbody>
+</table>
