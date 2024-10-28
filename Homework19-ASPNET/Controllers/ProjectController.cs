@@ -10,6 +10,7 @@ using Homework19_ASPNET.Data;
 
 namespace Homework19_ASPNET.Controllers
 {
+    
     public class ProjectController : Controller
     {
         private readonly Homework19_ASPNETContext _context;
@@ -17,6 +18,7 @@ namespace Homework19_ASPNET.Controllers
         public ProjectController(Homework19_ASPNETContext context)
         {
             _context = context;
+
         }
 
         // GET: Project

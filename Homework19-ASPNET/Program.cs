@@ -1,6 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Homework19_ASPNET.Data;
+using Homework19_ASPNET.Models;
+using Microsoft.AspNetCore.Identity;
+using static System.Formats.Asn1.AsnWriter;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<Homework19_ASPNETContext>(options =>
@@ -9,9 +13,32 @@ builder.Services.AddDbContext<Homework19_ASPNETContext>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<Homework19_ASPNETContext>()
+                .AddDefaultTokenProviders();
+
+
+builder.Services.AddAuthorization();
+
+
 var app = builder.Build();
 
-CreateDbIfNotExists(app);
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var userManager = services.GetRequiredService<UserManager<User>>();
+        var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        await RoleInitializer.InitializeAsync(userManager, rolesManager);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+    }
+}
+//CreateDbIfNotExists(app);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -34,20 +61,3 @@ app.MapControllerRoute(
 
 app.Run();
 
-static void CreateDbIfNotExists(IHost host)
-{
-    using (var scope = host.Services.CreateScope())
-    {
-        var services = scope.ServiceProvider;
-        try
-        {
-            var context = services.GetRequiredService<Homework19_ASPNETContext>();
-            DbInitializer.Initialize(context);
-        }
-        catch (Exception ex)
-        {
-            var logger = services.GetRequiredService<ILogger<Program>>();
-            logger.LogError(ex, "An error occurred creating the DB.");
-        }
-    }
-}
