@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Homework19_ASPNET;
 using Homework19_ASPNET.Data;
+using Homework19_ASPNET.Controllers.Api;
 
 namespace Homework19_ASPNET.Controllers
 {
@@ -14,17 +15,22 @@ namespace Homework19_ASPNET.Controllers
     public class ProjectController : Controller
     {
         private readonly Homework19_ASPNETContext _context;
+        private readonly HttpClient _httpClient;
 
-        public ProjectController(Homework19_ASPNETContext context)
+        public ProjectController(Homework19_ASPNETContext context, HttpClient httpClient)
         {
             _context = context;
-
+            _httpClient = httpClient;
         }
+
 
         // GET: Project
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Project.ToListAsync());
+            var response = await _httpClient.GetAsync($"https://localhost:44393/api/ProjectsControllerApi");
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadFromJsonAsync<IEnumerable<Project>>();
+            return View(content);
         }
 
         // GET: Project/Details/5

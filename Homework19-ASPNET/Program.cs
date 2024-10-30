@@ -5,18 +5,20 @@ using Homework19_ASPNET.Models;
 using Microsoft.AspNetCore.Identity;
 using static System.Formats.Asn1.AsnWriter;
 using Microsoft.Extensions.Hosting;
+using Homework19_ASPNET.Controllers.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<Homework19_ASPNETContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Homework19_ASPNETContext") ?? throw new InvalidOperationException("Connection string 'Homework19_ASPNETContext' not found.")));
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
 
+//builder.Services.AddControllers();
+builder.Services.AddControllersWithViews();
 builder.Services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<Homework19_ASPNETContext>()
                 .AddDefaultTokenProviders();
-
+builder.Services.AddHttpClient();
 
 builder.Services.AddAuthorization();
 
