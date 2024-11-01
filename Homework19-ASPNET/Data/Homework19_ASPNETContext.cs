@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Homework19_ASPNET;
-using Homework19_ASPNET.Models;
+using Homework19_ASPNET.Auth;
 
 namespace Homework19_ASPNET.Data
 {

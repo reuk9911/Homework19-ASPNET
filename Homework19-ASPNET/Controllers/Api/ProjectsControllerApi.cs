@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Homework19_ASPNET;
 using Homework19_ASPNET.Data;
+using Homework19_ASPNET.Auth;
+using Microsoft.AspNetCore.Identity;
 
 namespace Homework19_ASPNET.Controllers.Api
 {
@@ -15,6 +17,8 @@ namespace Homework19_ASPNET.Controllers.Api
     public class ProjectsControllerApi : ControllerBase
     {
         private readonly Homework19_ASPNETContext _context;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
         public ProjectsControllerApi(Homework19_ASPNETContext context)
         {
@@ -104,5 +108,6 @@ namespace Homework19_ASPNET.Controllers.Api
         {
             return _context.Project.Any(e => e.ID == id);
         }
+
     }
 }

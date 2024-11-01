@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Homework19_ASPNET.Auth;
 
 namespace Homework19_ASPNET.Models
 {

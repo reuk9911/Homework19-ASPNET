@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using static System.Formats.Asn1.AsnWriter;
 using Microsoft.Extensions.Hosting;
 using Homework19_ASPNET.Controllers.Api;
+using Homework19_ASPNET.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<Homework19_ASPNETContext>(options =>

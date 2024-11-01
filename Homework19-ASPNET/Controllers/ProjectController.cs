@@ -29,8 +29,8 @@ namespace Homework19_ASPNET.Controllers
         {
             var response = await _httpClient.GetAsync($"https://localhost:44393/api/ProjectsControllerApi");
             response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadFromJsonAsync<IEnumerable<Project>>();
-            return View(content);
+            var projects = await response.Content.ReadFromJsonAsync<IEnumerable<Project>>();
+            return View(projects);
         }
 
         // GET: Project/Details/5
