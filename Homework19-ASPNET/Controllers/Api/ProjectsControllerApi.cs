@@ -9,10 +9,14 @@ using Homework19_ASPNET;
 using Homework19_ASPNET.Data;
 using Homework19_ASPNET.Auth;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Homework19_ASPNET.Controllers.Api
 {
-    [Route("api/[controller]")]
+    [Route("api")]
     [ApiController]
     public class ProjectsControllerApi : ControllerBase
     {
@@ -20,10 +24,77 @@ namespace Homework19_ASPNET.Controllers.Api
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
 
-        public ProjectsControllerApi(Homework19_ASPNETContext context)
+        public ProjectsControllerApi(Homework19_ASPNETContext context, UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
+
         }
+        [Route("login")]
+        [HttpPost]
+        public async Task<IActionResult> Login(string userName, string password)
+        {
+            return NoContent();
+        }
+        [Route("register")]
+        [HttpPost]
+        public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
+        {
+            return NoContent();
+        }
+
+
+
+        //[HttpPost("/token")]
+        //public IActionResult Token(string username, string password)
+        //{
+        //    var identity = GetIdentity(username, password);
+        //    if (identity == null)
+        //    {
+        //        return BadRequest(new { errorText = "Invalid username or password." });
+        //    }
+
+        //    var now = DateTime.UtcNow;
+        //    создаем JWT-токен
+        //    var jwt = new JwtSecurityToken(
+        //            issuer: AuthOptions.ISSUER,
+        //            audience: AuthOptions.AUDIENCE,
+        //            notBefore: now,
+        //            claims: identity.Claims,
+        //            expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
+        //            signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+        //    var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+        //    var response = new
+        //    {
+        //        access_token = encodedJwt,
+        //        username = identity.Name
+        //    };
+
+        //    return Json(response);
+        //}
+
+        //private ClaimsIdentity GetIdentity(string username, string password)
+        //{
+        //    _userManager.
+        //    Person person = people.FirstOrDefault(x => x.Login == username && x.Password == password);
+        //    if (person != null)
+        //    {
+        //        var claims = new List<Claim>
+        //        {
+        //            new Claim(ClaimsIdentity.DefaultNameClaimType, person.Login),
+        //            new Claim(ClaimsIdentity.DefaultRoleClaimType, person.Role)
+        //        };
+        //        ClaimsIdentity claimsIdentity =
+        //        new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
+        //            ClaimsIdentity.DefaultRoleClaimType);
+        //        return claimsIdentity;
+        //    }
+
+        //    если пользователя не найдено
+        //    return null;
+        //}
 
         // GET: api/ProjectsControllerApi
         [HttpGet]

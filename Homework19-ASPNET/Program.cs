@@ -7,6 +7,14 @@ using static System.Formats.Asn1.AsnWriter;
 using Microsoft.Extensions.Hosting;
 using Homework19_ASPNET.Controllers.Api;
 using Homework19_ASPNET.Auth;
+//using Microsoft.AspNetCore.Authentication.Cookies;
+//using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.OAuth;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<Homework19_ASPNETContext>(options =>
@@ -14,7 +22,6 @@ builder.Services.AddDbContext<Homework19_ASPNETContext>(options =>
 
 // Add services to the container.
 
-//builder.Services.AddControllers();
 builder.Services.AddControllersWithViews();
 builder.Services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<Homework19_ASPNETContext>()
@@ -23,24 +30,54 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddAuthorization();
 
+/*//builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+//    .AddCookie(options =>
+//    {
+//        options.LoginPath = "/Login";
+//        options.AccessDeniedPath = "/accessdenied"; // ДОБАВИТЬ VIEW!!!!!!!!!!!!!!!!
+//    });*/
+
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            // указывает, будет ли валидироваться издатель при валидации токена
+            ValidateIssuer = true,
+            // строка, представляющая издателя
+            ValidIssuer = AuthOptions.ISSUER,
+            // будет ли валидироваться потребитель токена
+            ValidateAudience = true,
+            // установка потребителя токена
+            ValidAudience = AuthOptions.AUDIENCE,
+            // будет ли валидироваться время существования
+            ValidateLifetime = true,
+            // установка ключа безопасности
+            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+            // валидация ключа безопасности
+            ValidateIssuerSigningKey = true,
+        };
+    });
+
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        var userManager = services.GetRequiredService<UserManager<User>>();
-        var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-        await RoleInitializer.InitializeAsync(userManager, rolesManager);
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding the database.");
-    }
-}
+//using (var scope = app.Services.CreateScope())
+//{ // добавляем первого админа в БД
+//    var services = scope.ServiceProvider;
+//    try
+//    {
+//        var userManager = services.GetRequiredService<UserManager<User>>();
+//        var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+//        await RoleInitializer.InitializeAsync(userManager, rolesManager);
+//    }
+//    catch (Exception ex)
+//    {
+//        var logger = services.GetRequiredService<ILogger<Program>>();
+//        logger.LogError(ex, "An error occurred while seeding the database.");
+//    }
+//}
 //CreateDbIfNotExists(app);
 
 // Configure the HTTP request pipeline.
@@ -56,6 +93,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

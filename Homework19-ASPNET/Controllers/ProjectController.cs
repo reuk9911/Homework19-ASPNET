@@ -27,7 +27,8 @@ namespace Homework19_ASPNET.Controllers
         // GET: Project
         public async Task<IActionResult> Index()
         {
-            var response = await _httpClient.GetAsync($"https://localhost:44393/api/ProjectsControllerApi");
+            //var response = await _httpClient.GetAsync($"https://localhost:44393/api/ProjectsControllerApi");
+            var response = await _httpClient.GetAsync($"https://localhost:44393/api");
             response.EnsureSuccessStatusCode();
             var projects = await response.Content.ReadFromJsonAsync<IEnumerable<Project>>();
             return View(projects);

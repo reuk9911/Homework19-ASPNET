@@ -6,15 +6,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Homework19_ASPNET.Auth;
 using Microsoft.Extensions.Logging;
+using System.Net.Http;
+using System.Security.Claims;
 
 namespace Homework19_ASPNET.Controllers
 {
-    //
     public class AccountController : Controller
     {
         private readonly ILogger log;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly HttpClient _httpClient;
 
         public AccountController(UserManager<User> userManager, 
                                 SignInManager<User> signInManager,
@@ -23,6 +25,7 @@ namespace Homework19_ASPNET.Controllers
             this.log = Log.CreateLogger(">>> Мой Logger ");
             _userManager = userManager;
             _signInManager = signInManager;
+            _httpClient = new HttpClient();
         }
 
         [HttpGet]
@@ -39,23 +42,32 @@ namespace Homework19_ASPNET.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(UserLogin model)
         {
+                var response = await _httpClient.PostAsJsonAsync<UserLogin>
+                    ($"https://localhost:44393/api/login", model);
+
             if (ModelState.IsValid)
             {
-                var loginResult = await _signInManager.PasswordSignInAsync(model.LoginProp,
-                    model.Password,
-                    false,
-                    lockoutOnFailure: false);
+                ////получаем из формы email и пароль
+                //var form = context.Request.Form;
+                ////если email и / или пароль не установлены, посылаем статусный код ошибки 400
+                //if (!form.ContainsKey("email") || !form.ContainsKey("password"))
+                //    return Results.BadRequest("Email и/или пароль не установлены");
+                //string email = form["email"];
+                //string password = form["password"];
 
-                if (loginResult.Succeeded)
-                {
-                    if (Url.IsLocalUrl(model.ReturnUrl))
-                    {
-                        return Redirect(model.ReturnUrl);
-                    }
-
-                    return RedirectToAction("Index", "Project");
-                }
-
+                ////находим пользователя
+                //Person? person = people.FirstOrDefault(p => p.Email == email && p.Password == password);
+                //если пользователь не найден, отправляем статусный код 401
+                //if (person is null) return Results.Unauthorized();
+                //var claims = new List<Claim>
+                //{
+                //    new Claim(ClaimsIdentity.DefaultNameClaimType, person.Email),
+                //    new Claim(ClaimsIdentity.DefaultRoleClaimType, person.Role.Name)
+                //};
+                //var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
+                //var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+                //await context.SignInAsync(claimsPrincipal);
+                //return Results.Redirect(returnUrl ?? "/");
             }
 
             ModelState.AddModelError("", "Пользователь не найден");
