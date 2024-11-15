@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity.Data;
+using Homework19_ASPNET.Controllers.Api.Services;
 
 namespace Homework19_ASPNET.Controllers.Api
 {
@@ -21,21 +23,19 @@ namespace Homework19_ASPNET.Controllers.Api
     public class ProjectsControllerApi : ControllerBase
     {
         private readonly Homework19_ASPNETContext _context;
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
+        private readonly AccountService _accountService;
 
-        public ProjectsControllerApi(Homework19_ASPNETContext context, UserManager<User> userManager, SignInManager<User> signInManager)
+        public ProjectsControllerApi(Homework19_ASPNETContext context, AccountService accountService)
         {
             _context = context;
-            _userManager = userManager;
-            _signInManager = signInManager;
-
+            _accountService = accountService;
         }
         [Route("login")]
         [HttpPost]
-        public async Task<IActionResult> Login(string userName, string password)
+        public async Task<IActionResult> Login([FromBody] RegisterUserRequest login)
         {
-            return NoContent();
+            var token = _accountService.Login(login.UserName, login.Password);
+            return Ok(token);
         }
         [Route("register")]
         [HttpPost]
@@ -43,58 +43,6 @@ namespace Homework19_ASPNET.Controllers.Api
         {
             return NoContent();
         }
-
-
-
-        //[HttpPost("/token")]
-        //public IActionResult Token(string username, string password)
-        //{
-        //    var identity = GetIdentity(username, password);
-        //    if (identity == null)
-        //    {
-        //        return BadRequest(new { errorText = "Invalid username or password." });
-        //    }
-
-        //    var now = DateTime.UtcNow;
-        //    создаем JWT-токен
-        //    var jwt = new JwtSecurityToken(
-        //            issuer: AuthOptions.ISSUER,
-        //            audience: AuthOptions.AUDIENCE,
-        //            notBefore: now,
-        //            claims: identity.Claims,
-        //            expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
-        //            signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-        //    var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-        //    var response = new
-        //    {
-        //        access_token = encodedJwt,
-        //        username = identity.Name
-        //    };
-
-        //    return Json(response);
-        //}
-
-        //private ClaimsIdentity GetIdentity(string username, string password)
-        //{
-        //    _userManager.
-        //    Person person = people.FirstOrDefault(x => x.Login == username && x.Password == password);
-        //    if (person != null)
-        //    {
-        //        var claims = new List<Claim>
-        //        {
-        //            new Claim(ClaimsIdentity.DefaultNameClaimType, person.Login),
-        //            new Claim(ClaimsIdentity.DefaultRoleClaimType, person.Role)
-        //        };
-        //        ClaimsIdentity claimsIdentity =
-        //        new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
-        //            ClaimsIdentity.DefaultRoleClaimType);
-        //        return claimsIdentity;
-        //    }
-
-        //    если пользователя не найдено
-        //    return null;
-        //}
 
         // GET: api/ProjectsControllerApi
         [HttpGet]

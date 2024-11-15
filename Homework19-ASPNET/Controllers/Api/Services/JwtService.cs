@@ -13,7 +13,7 @@ namespace Homework19_ASPNET.Controllers.Api.Services
     public interface ITokenService
     {
         //public string GetAccessToken(/*IEnumerable<Claim> claims, out DateTime expires*/);
-        public string GetAccessToken(Account account);
+        public string GetAccessToken(string userName, List<string> roles);
         public string GetRefreshToken();
         //public ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
     }
@@ -25,14 +25,13 @@ namespace Homework19_ASPNET.Controllers.Api.Services
         {
             _options = options;
         }
-        public string GetAccessToken(Account account) 
+        public string GetAccessToken(string userName, List<string> roles) 
         {
             var claims = new List<Claim>
             {
-                new Claim("login", account.UserName),
-                new Claim("id", account.Id.ToString()),
+                new Claim("login", userName),
             };
-            foreach (var role in account.Roles)
+            foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }

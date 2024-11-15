@@ -8,6 +8,7 @@ using Homework19_ASPNET.Auth;
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Homework19_ASPNET.Controllers
 {
@@ -18,7 +19,7 @@ namespace Homework19_ASPNET.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly HttpClient _httpClient;
 
-        public AccountController(UserManager<User> userManager, 
+        public AccountController(UserManager<User> userManager,
                                 SignInManager<User> signInManager,
                                 ILoggerFactory Log)
         {
@@ -39,11 +40,11 @@ namespace Homework19_ASPNET.Controllers
             });
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        //[HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(UserLogin model)
         {
-                var response = await _httpClient.PostAsJsonAsync<UserLogin>
-                    ($"https://localhost:44393/api/login", model);
+            var p = new RegisterUserRequest(model.LoginProp, model.Password);
+            var response = await _httpClient.PostAsJsonAsync<RegisterUserRequest>($"https://localhost:44393/api/login/", p);
 
             if (ModelState.IsValid)
             {
@@ -96,7 +97,7 @@ namespace Homework19_ASPNET.Controllers
                 }
                 else//иначе
                 {
-                    foreach (var identityError in createResult.Errors) 
+                    foreach (var identityError in createResult.Errors)
                     {
                         ModelState.AddModelError("", identityError.Description);
                     }

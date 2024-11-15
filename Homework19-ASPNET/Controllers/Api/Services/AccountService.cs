@@ -17,7 +17,7 @@ namespace Homework19_ASPNET.Controllers.Api.Services
         {
             _userManager = userManager;
             _jwtService = jwtService;
-            IdentityError[] errors =
+            _errors = new[]
                 {
                     new IdentityError{ Code="0", Description="User already exists"},
                     new IdentityError{ Code="1", Description="User registration failed" },
@@ -51,8 +51,6 @@ namespace Homework19_ASPNET.Controllers.Api.Services
 
         public async Task<IdentityResult> Login(string userName, string password)
         {
-            Account account;
-
             User? user = _userManager.Users.FirstOrDefault<User>(p => p.UserName == userName);
 
             if (user == null)
@@ -62,9 +60,8 @@ namespace Homework19_ASPNET.Controllers.Api.Services
                 if (user.PasswordHash == password)
                 {
                     List<string>? roles = (await _userManager.GetRolesAsync(user)) as List<string>;
-                    account = new Account(user.UserName, user.Id, roles);
 
-                    _jwtService.GetAccessToken(account);
+                    _jwtService.GetAccessToken(user.UserName, roles);
 
                     return IdentityResult.Success;
                 }
@@ -74,30 +71,5 @@ namespace Homework19_ASPNET.Controllers.Api.Services
 
         }
 
-        //public async Task<string> Login(string userName, string password)
-        //{
-        //    Account account;
-
-        //    User? user = _userManager.Users.FirstOrDefault<User>(p => p.UserName == userName);
-
-        //    if (user == null)
-        //        return "";
-        //    else
-        //    {
-        //        if (user.PasswordHash == password)
-        //        {
-        //            List<string>? roles = (await _userManager.GetRolesAsync(user)) as List<string>;
-        //            account = new Account(user.UserName, user.Id, roles);
-
-        //            var token = _jwtService.GetAccessToken(account);
-
-        //            return token;
-        //        }
-        //        else
-        //            return "";
-        //    }
-
-
-
-        }
     }
+}
