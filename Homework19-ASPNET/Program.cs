@@ -28,11 +28,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<Homework19_ASPNETContext>()
                 .AddDefaultTokenProviders();
-builder.Services.AddHttpClient();
+//builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("AuthSettings"));
+builder.Services.AddAuth(builder.Configuration);
 
 
 

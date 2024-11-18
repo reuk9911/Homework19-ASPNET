@@ -3,6 +3,9 @@ using System.Text;
 
 namespace Homework19_ASPNET.Auth
 {
+    /// <summary>
+    /// Нигде не используется, наверное можно удалить, вместо него AuthSettings
+    /// </summary>
     public class AuthOptions
     {
         public const string ISSUER = "MyAuthServer"; // издатель токена

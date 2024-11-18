@@ -16,6 +16,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity.Data;
 using Homework19_ASPNET.Controllers.Api.Services;
 using Homework19_ASPNET.Controllers.Api.Models;
+using Microsoft.AspNetCore.Authorization;
 namespace Homework19_ASPNET.Controllers.Api
 {
     [Route("api")]
@@ -71,6 +72,7 @@ namespace Homework19_ASPNET.Controllers.Api
         // PUT: api/ProjectsControllerApi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        //[Authorize]
         public async Task<IActionResult> PutProject(int id, Project project)
         {
             if (id != project.ID)
