@@ -31,9 +31,13 @@ namespace Homework19_ASPNET.Controllers.Api.Services
             {
                 new Claim("login", userName),
             };
-            foreach (var role in roles)
+
+            if (roles != null)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
             }
 
             var jwtToken = new JwtSecurityToken(
@@ -43,7 +47,8 @@ namespace Homework19_ASPNET.Controllers.Api.Services
                     new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Value.SecretKey)),
                 SecurityAlgorithms.HmacSha256)
                 );
-            return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            string token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            return token;
         }
 
         //public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)

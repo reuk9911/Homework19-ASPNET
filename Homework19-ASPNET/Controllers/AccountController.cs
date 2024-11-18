@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Security.Claims;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Homework19_ASPNET.Controllers.Api.Models;
 
 namespace Homework19_ASPNET.Controllers
 {
@@ -43,9 +44,9 @@ namespace Homework19_ASPNET.Controllers
         //[HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(UserLogin model)
         {
-            var p = new RegisterUserRequest(model.LoginProp, model.Password);
-            var response = await _httpClient.PostAsJsonAsync<RegisterUserRequest>($"https://localhost:44393/api/login/", p);
-
+            var p = new LoginUserRequest(model.LoginProp, model.Password);
+            var response = _httpClient.PostAsJsonAsync<LoginUserRequest>($"https://localhost:44393/api/login/", p).Result;
+            //response.EnsureSuccessStatusCode();
             if (ModelState.IsValid)
             {
                 ////получаем из формы email и пароль

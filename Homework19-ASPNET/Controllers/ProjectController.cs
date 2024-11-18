@@ -17,10 +17,10 @@ namespace Homework19_ASPNET.Controllers
         private readonly Homework19_ASPNETContext _context;
         private readonly HttpClient _httpClient;
 
-        public ProjectController(Homework19_ASPNETContext context, HttpClient httpClient)
+        public ProjectController(Homework19_ASPNETContext context/*, HttpClient httpClient*/)
         {
             _context = context;
-            _httpClient = httpClient;
+            _httpClient = new HttpClient();
         }
 
 

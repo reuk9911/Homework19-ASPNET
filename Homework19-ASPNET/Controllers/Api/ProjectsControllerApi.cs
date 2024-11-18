@@ -15,7 +15,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity.Data;
 using Homework19_ASPNET.Controllers.Api.Services;
-
+using Homework19_ASPNET.Controllers.Api.Models;
 namespace Homework19_ASPNET.Controllers.Api
 {
     [Route("api")]
@@ -24,18 +24,22 @@ namespace Homework19_ASPNET.Controllers.Api
     {
         private readonly Homework19_ASPNETContext _context;
         private readonly AccountService _accountService;
+        //private readonly HttpContext _httpContext;
 
-        public ProjectsControllerApi(Homework19_ASPNETContext context, AccountService accountService)
+        public ProjectsControllerApi(Homework19_ASPNETContext context, AccountService accountService/*, HttpContext httpContext*/)
         {
             _context = context;
             _accountService = accountService;
+            //_httpContext = httpContext;
         }
         [Route("login")]
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] RegisterUserRequest login)
+        public async Task<IActionResult> Login([FromBody] LoginUserRequest login)
         {
-            var token = _accountService.Login(login.UserName, login.Password);
-            return Ok(token);
+            //var token = _accountService.Login(login.UserName, login.Password);
+            var tokenString = _accountService.Login(login.UserName, login.Password);
+            HttpContext.Response.Cookies.Append("token", tokenString);
+            return Ok(new { token = tokenString, user = login });
         }
         [Route("register")]
         [HttpPost]

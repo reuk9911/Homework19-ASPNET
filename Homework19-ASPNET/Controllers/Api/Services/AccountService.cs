@@ -2,6 +2,8 @@
 using Homework19_ASPNET.Controllers.Api.Models;
 using Homework19_ASPNET.Data;
 using Microsoft.AspNetCore.Identity;
+using System.Configuration;
+using System.Data;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Homework19_ASPNET.Controllers.Api.Services
@@ -49,24 +51,25 @@ namespace Homework19_ASPNET.Controllers.Api.Services
             }
         }
 
-        public async Task<IdentityResult> Login(string userName, string password)
+        public string Login(string userName, string password)
         {
             User? user = _userManager.Users.FirstOrDefault<User>(p => p.UserName == userName);
 
             if (user == null)
-                return IdentityResult.Failed(_errors[2]);
+                return "User not found";
             else
             {
-                if (user.PasswordHash == password)
+                var result = new PasswordHasher<User>().
+                    VerifyHashedPassword(user, user.PasswordHash, password);
+                if (result == PasswordVerificationResult.Success)
                 {
-                    List<string>? roles = (await _userManager.GetRolesAsync(user)) as List<string>;
-
-                    _jwtService.GetAccessToken(user.UserName, roles);
-
-                    return IdentityResult.Success;
+                    var task = _userManager.GetRolesAsync(user).Result;
+                    List<string>? roles = task.ToList<string>();
+                    var token = _jwtService.GetAccessToken(user.UserName, roles);
+                    return token;
                 }
                 else
-                    return IdentityResult.Failed(_errors[3]); ;
+                    return "Wrong username or password";
             }
 
         }
