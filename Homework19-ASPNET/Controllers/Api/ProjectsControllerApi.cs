@@ -34,12 +34,11 @@ namespace Homework19_ASPNET.Controllers.Api
         }
         [Route("login")]
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] LoginUserRequest login)
+        public IActionResult Login([FromBody] LoginUserRequest login)
         {
-            //var token = _accountService.Login(login.UserName, login.Password);
             var tokenString = _accountService.Login(login.UserName, login.Password);
             HttpContext.Response.Cookies.Append("token", tokenString);
-            return Ok(new { token = tokenString, user = login });
+            return Ok(tokenString);
         }
         [Route("register")]
         [HttpPost]

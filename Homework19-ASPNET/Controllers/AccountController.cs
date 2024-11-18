@@ -42,9 +42,9 @@ namespace Homework19_ASPNET.Controllers
         }
 
         //[HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(UserLogin model)
+        public IActionResult Login(UserLogin model)
         {
-            var p = new LoginUserRequest(model.LoginProp, model.Password);
+            LoginUserRequest p = new LoginUserRequest(model.LoginProp, model.Password);
             var response = _httpClient.PostAsJsonAsync<LoginUserRequest>($"https://localhost:44393/api/login/", p).Result;
             //response.EnsureSuccessStatusCode();
             if (ModelState.IsValid)
