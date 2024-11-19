@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Homework19_ASPNET.Controllers.Api.Models;
+using System.Net.Http.Headers;
 
 namespace Homework19_ASPNET.Controllers
 {
@@ -18,7 +19,7 @@ namespace Homework19_ASPNET.Controllers
         private readonly ILogger log;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        private readonly HttpClient _httpClient;
+        private HttpClient _httpClient;
 
         public AccountController(UserManager<User> userManager,
                                 SignInManager<User> signInManager,
@@ -33,6 +34,8 @@ namespace Homework19_ASPNET.Controllers
         [HttpGet]
         public IActionResult Login(string returnUrl)
         {
+            if (returnUrl==null)
+                returnUrl= $"/"; //https://localhost:44393
             log.LogWarning($" ------- \n >> Login(string returnUrl) сработал, returnUrl = {returnUrl}\n ------- \n ");
 
             return View(new UserLogin()
@@ -41,38 +44,24 @@ namespace Homework19_ASPNET.Controllers
             });
         }
 
-        //[HttpPost, ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public IActionResult Login(UserLogin model)
         {
-            LoginUserRequest p = new LoginUserRequest(model.LoginProp, model.Password);
-            var response = _httpClient.PostAsJsonAsync<LoginUserRequest>($"https://localhost:44393/api/login/", p).Result;
             //response.EnsureSuccessStatusCode();
             if (ModelState.IsValid)
             {
-                ////получаем из формы email и пароль
-                //var form = context.Request.Form;
-                ////если email и / или пароль не установлены, посылаем статусный код ошибки 400
-                //if (!form.ContainsKey("email") || !form.ContainsKey("password"))
-                //    return Results.BadRequest("Email и/или пароль не установлены");
-                //string email = form["email"];
-                //string password = form["password"];
+                LoginUserRequest p = new LoginUserRequest(model.LoginProp, model.Password);
+                var response = _httpClient.PostAsJsonAsync<LoginUserRequest>($"https://localhost:44393/api/login/", p).Result;
+                
+                //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", );
 
-                ////находим пользователя
-                //Person? person = people.FirstOrDefault(p => p.Email == email && p.Password == password);
-                //если пользователь не найден, отправляем статусный код 401
-                //if (person is null) return Results.Unauthorized();
-                //var claims = new List<Claim>
-                //{
-                //    new Claim(ClaimsIdentity.DefaultNameClaimType, person.Email),
-                //    new Claim(ClaimsIdentity.DefaultRoleClaimType, person.Role.Name)
-                //};
-                //var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
-                //var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                //await context.SignInAsync(claimsPrincipal);
-                //return Results.Redirect(returnUrl ?? "/");
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                    ModelState.AddModelError("", "Неправильный логин или пароль");
+                return Redirect(model.ReturnUrl ?? "/");
+                
             }
-
-            ModelState.AddModelError("", "Пользователь не найден");
+            else
+                ModelState.AddModelError("", "Пользователь не найден");
             return View(model);
         }
 

@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Homework19_ASPNET.Controllers.Api.Services;
 using Homework19_ASPNET.Controllers.Api.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Runtime.InteropServices;
 namespace Homework19_ASPNET.Controllers.Api
 {
     [Route("api")]
@@ -25,22 +26,23 @@ namespace Homework19_ASPNET.Controllers.Api
     {
         private readonly Homework19_ASPNETContext _context;
         private readonly AccountService _accountService;
-        //private readonly HttpContext _httpContext;
 
-        public ProjectsControllerApi(Homework19_ASPNETContext context, AccountService accountService/*, HttpContext httpContext*/)
+        public ProjectsControllerApi(Homework19_ASPNETContext context, AccountService accountService)
         {
             _context = context;
             _accountService = accountService;
-            //_httpContext = httpContext;
         }
         [Route("login")]
         [HttpPost]
         public IActionResult Login([FromBody] LoginUserRequest login)
         {
             var tokenString = _accountService.Login(login.UserName, login.Password);
+            if (tokenString == "Wrong username or password")
+                return Unauthorized();
             HttpContext.Response.Cookies.Append("token", tokenString);
             return Ok(tokenString);
         }
+
         [Route("register")]
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)

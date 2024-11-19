@@ -56,7 +56,7 @@ namespace Homework19_ASPNET.Controllers.Api.Services
             User? user = _userManager.Users.FirstOrDefault<User>(p => p.UserName == userName);
 
             if (user == null)
-                return "User not found";
+                return "Wrong username or password";
             else
             {
                 var result = new PasswordHasher<User>().

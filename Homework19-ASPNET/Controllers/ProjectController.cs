@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Homework19_ASPNET;
 using Homework19_ASPNET.Data;
 using Homework19_ASPNET.Controllers.Api;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Homework19_ASPNET.Controllers
 {
@@ -17,7 +18,7 @@ namespace Homework19_ASPNET.Controllers
         private readonly Homework19_ASPNETContext _context;
         private readonly HttpClient _httpClient;
 
-        public ProjectController(Homework19_ASPNETContext context/*, HttpClient httpClient*/)
+        public ProjectController(Homework19_ASPNETContext context)
         {
             _context = context;
             _httpClient = new HttpClient();
@@ -27,7 +28,6 @@ namespace Homework19_ASPNET.Controllers
         // GET: Project
         public async Task<IActionResult> Index()
         {
-            //var response = await _httpClient.GetAsync($"https://localhost:44393/api/ProjectsControllerApi");
             var response = await _httpClient.GetAsync($"https://localhost:44393/api");
             response.EnsureSuccessStatusCode();
             var projects = await response.Content.ReadFromJsonAsync<IEnumerable<Project>>();
@@ -63,6 +63,7 @@ namespace Homework19_ASPNET.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles ="admin, simpleUser")]
         public async Task<IActionResult> Create([Bind("ID,Name,Description,StartDate,EndDate,Status,Owner")] Project project)
         {
             if (ModelState.IsValid)

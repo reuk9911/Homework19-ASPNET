@@ -56,6 +56,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.Use(async (context, next) =>
+{
+    if (context.Request.Cookies.TryGetValue("token", out string? token))
+        context.Request.Headers.Authorization = $"Bearer {token}";
+    await next();
+});
 app.UseAuthentication();
 app.UseAuthorization();
 
