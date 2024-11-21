@@ -52,13 +52,10 @@ namespace Homework19_ASPNET.Controllers
             {
                 LoginUserRequest p = new LoginUserRequest(model.LoginProp, model.Password);
                 var response = _httpClient.PostAsJsonAsync<LoginUserRequest>($"https://localhost:44393/api/login/", p).Result;
-                
-                //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", );
 
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                     ModelState.AddModelError("", "Неправильный логин или пароль");
                 return Redirect(model.ReturnUrl ?? "/");
-                
             }
             else
                 ModelState.AddModelError("", "Пользователь не найден");

@@ -1,6 +1,7 @@
 ﻿using Homework19_ASPNET.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 namespace Homework19_ASPNET.Controllers.Api.Services
@@ -22,7 +23,8 @@ namespace Homework19_ASPNET.Controllers.Api.Services
                         ValidateAudience = false,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authSettings.SecretKey))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authSettings.SecretKey)),
+                        RoleClaimType = ClaimTypes.Role
                     };
                 });
             return serviceCollection;

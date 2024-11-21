@@ -18,6 +18,8 @@ using Homework19_ASPNET.Controllers.Api.Services;
 using Homework19_ASPNET.Controllers.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Runtime.InteropServices;
+using Microsoft.Net.Http.Headers;
+using System.Net;
 namespace Homework19_ASPNET.Controllers.Api
 {
     [Route("api")]
@@ -39,12 +41,13 @@ namespace Homework19_ASPNET.Controllers.Api
             var tokenString = _accountService.Login(login.UserName, login.Password);
             if (tokenString == "Wrong username or password")
                 return Unauthorized();
-            HttpContext.Response.Cookies.Append("token", tokenString);
+            Response.Cookies.Append("token", tokenString);
             return Ok(tokenString);
         }
 
         [Route("register")]
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
         {
             return NoContent();
@@ -74,7 +77,7 @@ namespace Homework19_ASPNET.Controllers.Api
         // PUT: api/ProjectsControllerApi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        //[Authorize]
+        [Authorize(Roles ="admin")]
         public async Task<IActionResult> PutProject(int id, Project project)
         {
             if (id != project.ID)
@@ -106,16 +109,18 @@ namespace Homework19_ASPNET.Controllers.Api
         // POST: api/ProjectsControllerApi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Project>> PostProject(Project project)
+        [Authorize(Roles = "admin, simpleUser")]
+        [Route("add")]
+        public async Task<ActionResult<Project>> PostProject([FromBody]Project project)
         {
             _context.Project.Add(project);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction("GetProject", new { id = project.ID }, project);
         }
 
         // DELETE: api/ProjectsControllerApi/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteProject(int id)
         {
             var project = await _context.Project.FindAsync(id);

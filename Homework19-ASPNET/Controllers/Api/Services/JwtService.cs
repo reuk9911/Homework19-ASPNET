@@ -29,7 +29,7 @@ namespace Homework19_ASPNET.Controllers.Api.Services
         {
             var claims = new List<Claim>
             {
-                new Claim("login", userName),
+                new Claim(ClaimTypes.NameIdentifier, userName),
             };
 
             if (roles != null)
@@ -86,6 +86,7 @@ namespace Homework19_ASPNET.Controllers.Api.Services
                 //ValidIssuer = _settings.Issuer,
                 //ValidAudience = _settings.Audience,
                 IssuerSigningKey = key,
+                RoleClaimType = ClaimTypes.Role
             };
             var tokenHandler = new JwtSecurityTokenHandler();
             var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken securityToken);

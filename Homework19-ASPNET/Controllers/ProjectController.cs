@@ -9,6 +9,7 @@ using Homework19_ASPNET;
 using Homework19_ASPNET.Data;
 using Homework19_ASPNET.Controllers.Api;
 using Microsoft.AspNetCore.Authorization;
+using Homework19_ASPNET.Controllers.Api.Models;
 
 namespace Homework19_ASPNET.Controllers
 {
@@ -29,8 +30,13 @@ namespace Homework19_ASPNET.Controllers
         public async Task<IActionResult> Index()
         {
             var response = await _httpClient.GetAsync($"https://localhost:44393/api");
-            response.EnsureSuccessStatusCode();
             var projects = await response.Content.ReadFromJsonAsync<IEnumerable<Project>>();
+
+            if (projects == null)
+            {
+                return NotFound();
+            }
+
             return View(projects);
         }
 
@@ -42,8 +48,9 @@ namespace Homework19_ASPNET.Controllers
                 return NotFound();
             }
 
-            var project = await _context.Project
-                .FirstOrDefaultAsync(m => m.ID == id);
+            var response = await _httpClient.GetAsync($"https://localhost:44393/api/{id}");
+            var project = await response.Content.ReadFromJsonAsync<Project>();
+
             if (project == null)
             {
                 return NotFound();
@@ -53,6 +60,7 @@ namespace Homework19_ASPNET.Controllers
         }
 
         // GET: Project/Create
+        [Authorize(Roles = "admin")]
         public IActionResult Create()
         {
             return View();
@@ -63,13 +71,14 @@ namespace Homework19_ASPNET.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles ="admin, simpleUser")]
+        [Authorize(Roles ="admin")]
+        [Authorize(Roles = "simpleUser")]
         public async Task<IActionResult> Create([Bind("ID,Name,Description,StartDate,EndDate,Status,Owner")] Project project)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(project);
-                await _context.SaveChangesAsync();
+                var response = _httpClient.PostAsJsonAsync<Project>($"https://localhost:44393/api/add/", project).Result;
+
                 return RedirectToAction(nameof(Index));
             }
             return View(project);
