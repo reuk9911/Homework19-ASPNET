@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Runtime.InteropServices;
 using Microsoft.Net.Http.Headers;
 using System.Net;
+
 namespace Homework19_ASPNET.Controllers.Api
 {
     [Route("api")]
@@ -41,7 +42,8 @@ namespace Homework19_ASPNET.Controllers.Api
             var tokenString = _accountService.Login(login.UserName, login.Password);
             if (tokenString == "Wrong username or password")
                 return Unauthorized();
-            Response.Cookies.Append("token", tokenString);
+
+
             return Ok(tokenString);
         }
 
@@ -109,7 +111,8 @@ namespace Homework19_ASPNET.Controllers.Api
         // POST: api/ProjectsControllerApi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [Authorize(Roles = "admin, simpleUser")]
+        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "simpleUser")]
         [Route("add")]
         public async Task<ActionResult<Project>> PostProject([FromBody]Project project)
         {

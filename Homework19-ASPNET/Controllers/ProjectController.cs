@@ -61,6 +61,7 @@ namespace Homework19_ASPNET.Controllers
 
         // GET: Project/Create
         [Authorize(Roles = "admin")]
+        [Authorize(Roles = "simpleUser")]
         public IActionResult Create()
         {
             return View();

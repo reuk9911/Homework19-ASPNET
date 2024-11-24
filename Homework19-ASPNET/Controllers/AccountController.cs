@@ -51,9 +51,22 @@ namespace Homework19_ASPNET.Controllers
             if (ModelState.IsValid)
             {
                 LoginUserRequest p = new LoginUserRequest(model.LoginProp, model.Password);
-                var response = _httpClient.PostAsJsonAsync<LoginUserRequest>($"https://localhost:44393/api/login/", p).Result;
+                var response = _httpClient.PostAsJsonAsync<LoginUserRequest>($"https://localhost:44393/api/login/", p);
 
-                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                var token = response.Result.Content.ReadAsStringAsync().Result;
+                CookieOptions options = new CookieOptions
+                {
+                    Domain = "localhost", // Set the domain for the cookie
+                    Expires = DateTime.Now.AddDays(7), // Set expiration date to 7 days from now
+                    Path = "/", // Cookie is available within the entire application
+                    Secure = true, // Ensure the cookie is only sent over HTTPS
+                    HttpOnly = true, // Prevent client-side scripts from accessing the cookie
+                    MaxAge = TimeSpan.FromDays(7), // Another way to set the expiration time
+                    IsEssential = true // Indicates the cookie is essential for the application to function
+                };
+                HttpContext.Response.Cookies.Append("token",token , options);
+
+                if (response.Result.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                     ModelState.AddModelError("", "Неправильный логин или пароль");
                 return Redirect(model.ReturnUrl ?? "/");
             }
